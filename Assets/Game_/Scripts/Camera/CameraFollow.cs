@@ -22,37 +22,54 @@ public class CameraFollow : Singleton<CameraFollow>
 
     Vector3 offset;
     Vector3 rot;
+
     float smoothSpeed;
 
+    [SerializeField]
+    float smoothSpeedGplay;
+    [SerializeField]
+    float smoothSpeedShop;
 
     Character target;
 
-    private void Update()
-    {
-        if (GameManager.IsState(GameState.GamePlay))
-        {
-            smoothSpeed = .5f;
-        }
-        else
-        {
-            smoothSpeed = .1f;
-        }
+    public Transform Tf;
 
+    private void Awake()
+    {
+        Tf = transform;
+        GameManager.Ins._OnStateChanged += OnChangeStateCamera;
+    }
+
+    private void FixedUpdate()
+    {
         if (target != null)
         {
-            transform.position = Vector3.Lerp(transform.position, target.transform.position + offset, smoothSpeed);
-            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, rot, smoothSpeed);
+            Tf.position = Vector3.Lerp(Tf.position, target.Tf.position + offset, smoothSpeed * Time.deltaTime);
+            Tf.eulerAngles = Vector3.Lerp(Tf.eulerAngles, rot, smoothSpeed);
+        }
+    }
+
+    public void OnChangeStateCamera(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.GamePlay:
+                smoothSpeed = smoothSpeedGplay;
+                break;
+            default:
+                smoothSpeed = smoothSpeedShop;
+                break;
         }
     }
 
     public bool IsInsideCameraView(Bounds bounds)
     {
         Plane[] cameraFrustum = GeometryUtility.CalculateFrustumPlanes(_camera);
-        if(GeometryUtility.TestPlanesAABB(cameraFrustum, bounds))
+        if (GeometryUtility.TestPlanesAABB(cameraFrustum, bounds))
         {
             return true;
         }
-        else return false;  
+        else return false;
     }
 
     public void MainMenuPos()

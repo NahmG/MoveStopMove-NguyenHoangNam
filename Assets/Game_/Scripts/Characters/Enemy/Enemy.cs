@@ -7,18 +7,30 @@ using UnityEngine.AI;
 public class Enemy : Character
 {
     [Header("Enemy settings")]
+    public EnemyMovement movement;
     [SerializeField] Renderer rend;
 
     [SerializeField] CapsuleCollider _collider;
     [SerializeField] GameObject TargetRing;
     public NavMeshAgent agent;
-    float nextAttack = 0f;
 
     [SerializeField] CharSkin skin;
 
-    public IState currentState { get; private set; }
+    public event Action<Enemy> OnDeadEvent;
 
-    public static event Action<Enemy> OnDeadEvent;
+    public StateMachine<Enemy> StateMachine;
+    public EIdleState IdleState;
+    public EMoveState MoveState;
+    public EAttackState AttackState;
+
+    private void Awake()
+    {
+        StateMachine = new();
+
+        IdleState = new EIdleState(StateMachine, this);
+        MoveState = new EMoveState(StateMachine, this);
+        AttackState = new EAttackState(StateMachine, this);
+    }
 
     public override void Update()
     {
@@ -26,15 +38,18 @@ public class Enemy : Character
 
         base.Update();
 
-        currentState?.OnExecute(this);
+        StateMachine.currentState?.Excecute();
+    }
 
-        if (movement.Moving && currentState is MoveState)
+    public override void OnGameStageChanged(GameState state)
+    {
+        base.OnGameStageChanged(state);
+
+        switch (state)
         {
-            animControl.ChangeAnim("Run");
-        }
-        else if (currentState is not AttackState)
-        {
-            animControl.ChangeAnim("Idle");
+            case GameState.MainMenu:
+                StateMachine.ChangeState(null);
+                break;
         }
     }
 
@@ -49,14 +64,29 @@ public class Enemy : Character
 
         DeSelected();
         _collider.enabled = true;
-        ChangeState(null);
+
+        StateMachine.ChangeState(null);
     }
 
     public override void OnPlay()
     {
         base.OnPlay();
 
-        ChangeState(new IdleState());
+        StateMachine.Init(IdleState);
+    }
+
+    public override void OnDeath()
+    {
+        base.OnDeath();
+
+        movement.StopMoving();
+        animControl.ChangeAnim("Dead");
+        _collider.enabled = false;
+
+        color *= .5f;
+        rend.material.color = color;
+
+        Invoke(nameof(OnDespawn), 2f);
     }
 
     public override void OnDespawn()
@@ -93,44 +123,13 @@ public class Enemy : Character
         }
     }
 
-    public void Attack()
-    {
-        if (Time.time >= nextAttack)
-        {
-            animControl.ResetAnim();
-            if (IsBoosted)
-            {
-                animControl.ChangeAnim("Ulti");
-            }
-            else
-            {
-                animControl.ChangeAnim("Attack");
-            }
-            attacker.Attack();
-            nextAttack = Time.time + attackRate;
-        }
-    }
-
-    public override void Die()
-    {
-        base.Die();
-
-        movement.StopMoving();
-        animControl.ChangeAnim("Dead");
-        _collider.enabled = false;
-
-        color *= .5f;
-        rend.material.color = color;
-
-        Invoke(nameof(OnDespawn), 2f);
-    }
 
     public void InitLevel(int level)
     {
         this.level = level;
     }
 
-    public void OnSelected()
+    public void Selected()
     {
         TargetRing.SetActive(true);
     }
@@ -138,20 +137,5 @@ public class Enemy : Character
     public void DeSelected()
     {
         TargetRing.SetActive(false);
-    }
-
-    public void ChangeState(IState newState)
-    {
-        if (currentState != null)
-        {
-            currentState.OnExit(this);
-        }
-
-        currentState = newState;
-
-        if (currentState != null)
-        {
-            currentState.OnEnter(this);
-        }
     }
 }

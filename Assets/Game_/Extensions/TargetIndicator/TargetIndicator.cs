@@ -25,12 +25,9 @@ public class TargetIndicator : GameUnit
     [SerializeField] RectTransform rectTransform;
     public Character Target => target;
 
-    public static event Action<TargetIndicator> OnIndicatorChange;
-
-    private void Update()
+    private void LateUpdate()
     {
         SetIndicatorPosition();
-        OnIndicatorChange?.Invoke(this);
         SetLevelText();
     }
 
@@ -41,8 +38,6 @@ public class TargetIndicator : GameUnit
         canvasRect = canvas.GetComponent<RectTransform>();
         TargetIndicatorImage.color = offTarIndImage.color = target.color;
 
-        TurnOffIndicator();
-
         SetIndicatorPosition(); 
     }
 
@@ -51,20 +46,6 @@ public class TargetIndicator : GameUnit
         target = null;
         mainCamera = null;
         canvasRect = null;
-    }
-
-    public void TurnOnIndicator()
-    {
-        text.color = new Color(text.color.r, text.color.g, text.color.b, 1);
-        TargetIndicatorImage.enabled = true;
-        offTarIndImage.enabled = true;
-    }
-
-    public void TurnOffIndicator()
-    {
-        TargetIndicatorImage.enabled = false;
-        offTarIndImage.enabled = false;
-        text.color = new Color(text.color.r, text.color.g, text.color.b, 0);
     }
 
     private void SetLevelText()

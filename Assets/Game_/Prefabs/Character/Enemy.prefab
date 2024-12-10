@@ -197,6 +197,7 @@ MonoBehaviour:
   anim: {fileID: 3344969320680857550}
   attacker: {fileID: 2171653137955709361}
   animControl: {fileID: 4849502945754598437}
+  Tf: {fileID: 6903807553400416335}
   movement: {fileID: 3971455159120242109}
   rend: {fileID: 206575067961233220}
   _collider: {fileID: 6204109968395170553}
@@ -242,9 +243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7ea7fddbfb78d84290365ea080e366e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 9149529909554527589}
+  owner: {fileID: 9149529909554527589}
   direc: {x: 0, y: 0, z: 0}
-  target: {fileID: 0}
 --- !u!114 &1891726314685216441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +337,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7220807327299630968}
   - component: {fileID: 2257119927192179384}
+  - component: {fileID: 6290428549830127138}
   m_Layer: 0
   m_Name: AttackSight
   m_TagString: Untagged
@@ -371,7 +372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8020b36cda354604ebe69bb63a67f49a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 9149529909554527589}
+  owner: {fileID: 9149529909554527589}
   attacker: {fileID: 2171653137955709361}
   obstacleLayer:
     serializedVersion: 2
@@ -379,6 +380,28 @@ MonoBehaviour:
   characterLayer:
     serializedVersion: 2
     m_Bits: 128
+  _col: {fileID: 6290428549830127138}
+--- !u!135 &6290428549830127138
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3778533410249987634}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5822119761595284994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1551,7 +1574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootPoint: {fileID: 6688471213483046074}
-  c: {fileID: 9149529909554527589}
+  owner: {fileID: 9149529909554527589}
 --- !u!137 &9024364144715794983 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -529177695146175607, guid: 38f9296dc39c27647a0119314baf12a2, type: 3}

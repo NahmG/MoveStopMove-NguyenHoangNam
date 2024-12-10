@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class CharacterAttack : MonoBehaviour
 {
-    [SerializeField] Character character;
+    [SerializeField] Character owner;
 
     [HideInInspector] public Vector3 direc;
 
-    [SerializeField] Character target;
+    Character target;
     public Character Target => target;
 
     public void Attack()
@@ -20,21 +20,47 @@ public class CharacterAttack : MonoBehaviour
             direc.Normalize();
             Quaternion rotation = Quaternion.LookRotation(direc);
             transform.rotation = rotation;
+
+            if (owner.IsBoosted)
+            {
+                owner.animControl.ChangeAnim("Ulti");
+            }
+            else
+            {
+                owner.animControl.ChangeAnim("Attack");
+            }
         }
     }
 
-    public void SetTarget(Character target)
+    public void SetTarget(Character tar)
     {
-        this.target = target;
-    }
-
-    public bool TargetInRange()
-    {
-        if (target != null && Vector3.Distance(transform.position, target.transform.position) < character.AttackRange)
+        if (!target)
         {
-            return true;
+            target = tar;
+            if (target is Enemy enemy && owner is Player)
+            {
+                enemy.Selected();
+            }
         }
-        else { return false; }
+    }
+
+    public void RemoveTarget()
+    {
+        if (target != null && target is Enemy enemy)
+        {
+            enemy.DeSelected();
+        }
+        target = null;
+    }
+
+    public bool HasTarget()
+    {
+        return target != null && TargetInRange();
+    }
+
+    private bool TargetInRange()
+    {
+        return target != null && Vector3.Distance(transform.position, target.transform.position) < owner.AttackRange;
     }
 
 }

@@ -27,6 +27,9 @@ public class DataManager : Singleton<DataManager>
     {
         itemList = listItemUnit.ToItemDictionary();
         LoadData();
+
+        
+        
     }
 
     public void LoadData()
@@ -115,5 +118,34 @@ public class ListItemUnit
         }
 
         return newDict;
+    }
+}
+
+[System.Serializable]
+public class PlayerData
+{
+    public string name;
+    public int stage;
+    public int coin;
+
+    public int weaponId = 0;
+    public int[] itemId;
+
+    public bool[] weaponsUnlock;
+    public bool[] hatUnlock;
+    public bool[] pantUnlock;
+    public bool[] shieldUnlock;
+    public bool[] suitUnlock;
+
+    public PlayerData(int weaponUnl, int hatUnl, int pantUnl, int shieldUnl, int suitUnl)
+    {
+        this.itemId = new int[] { -1, -1, -1, -1 };
+        this.weaponsUnlock = new bool[weaponUnl];
+        this.hatUnlock = new bool[hatUnl];
+        this.pantUnlock = new bool[pantUnl];
+        this.shieldUnlock = new bool[shieldUnl];
+        this.suitUnlock = new bool[suitUnl];
+
+        weaponsUnlock[0] = true;
     }
 }

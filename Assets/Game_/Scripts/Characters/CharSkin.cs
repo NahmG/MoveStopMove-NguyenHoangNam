@@ -139,7 +139,6 @@ public class CharSkin : MonoBehaviour
                     bodyRenderer.material.mainTexture = suit.texture;
                 }
                 break;
-
         }
     }
 

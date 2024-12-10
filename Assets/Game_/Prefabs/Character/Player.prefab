@@ -357,8 +357,9 @@ MonoBehaviour:
   anim: {fileID: 3751691578647507239}
   attacker: {fileID: 4508490071687213681}
   animControl: {fileID: 77743084096922254}
-  movement: {fileID: 1381570938913483573}
+  Tf: {fileID: 8311450356932678950}
   rb: {fileID: 8654532845778019970}
+  movement: {fileID: 1381570938913483573}
   CanMove: 0
   _collider: {fileID: 3730926729557324908}
   combatTextPrefab: {fileID: 4427902846796870557, guid: 5b18417bda4d53341bfd0de8786a46a4, type: 3}
@@ -428,9 +429,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7ea7fddbfb78d84290365ea080e366e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 9107282687655121058}
+  owner: {fileID: 9107282687655121058}
   direc: {x: 0, y: 0, z: 0}
-  target: {fileID: 0}
 --- !u!1 &6066449864304630465
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,6 +604,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6190174500385123319}
   - component: {fileID: 4197884245754697878}
+  - component: {fileID: 8457157048865555221}
   m_Layer: 0
   m_Name: AttackSight
   m_TagString: Untagged
@@ -638,7 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8020b36cda354604ebe69bb63a67f49a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 9107282687655121058}
+  owner: {fileID: 9107282687655121058}
   attacker: {fileID: 4508490071687213681}
   obstacleLayer:
     serializedVersion: 2
@@ -646,6 +647,28 @@ MonoBehaviour:
   characterLayer:
     serializedVersion: 2
     m_Bits: 128
+  _col: {fileID: 8457157048865555221}
+--- !u!135 &8457157048865555221
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8708292291402237510}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2296862825900341063
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1736,4 +1759,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootPoint: {fileID: 3163749789254737551}
-  c: {fileID: 9107282687655121058}
+  owner: {fileID: 9107282687655121058}

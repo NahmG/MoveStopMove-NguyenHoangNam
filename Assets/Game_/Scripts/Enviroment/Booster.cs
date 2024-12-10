@@ -6,13 +6,11 @@ using UnityEngine;
 
 public class Booster : MonoBehaviour
 {
-    [SerializeField] Ease easeDown;
-
     private void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.CompareTag("Character"))
+        if (col.CompareTag(Constant.CHARACTER_TAG))
         {
-            Character c = col.gameObject.GetComponent<Character>();
+            Character c = Cache.GenCharacter(col);
             c.Booster();
             OnDespawn();
         }
@@ -20,12 +18,13 @@ public class Booster : MonoBehaviour
 
     public void OnInit()
     {
-        transform.DOMoveY(0, 1f).SetEase(easeDown);
+        transform.DOMoveY(0, 1f).SetEase(Ease.InCubic);
     }
 
     public void OnDespawn()
     {
         Destroy(gameObject);
+        CharacterManager.Ins.AddBooster();
     }
 
 }

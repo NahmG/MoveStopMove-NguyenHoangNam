@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CharacterMovement : MonoBehaviour
+public abstract class CharacterMovement : MonoBehaviour
 {
     public bool Moving;
 

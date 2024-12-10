@@ -14,7 +14,7 @@ public class PlayerMovement : CharacterMovement
 
     private Vector3 moveDirection;
 
-    private void GetInput()
+    public void GetInput()
     {
         Joystick stick = player.joystick;
         if (stick != null)
@@ -24,13 +24,16 @@ public class PlayerMovement : CharacterMovement
         }
     }
 
+    public bool HasInput()
+    {
+        return verticalMovement != 0 || horizontalMovement != 0;
+    }
+
     public override void Move()
     {
-        if (!player.CanMove) return;
+        //if (!player.CanMove) return;
 
         base.Move();
-
-        GetInput();
 
         moveDirection = new Vector3(verticalMovement, 0, horizontalMovement);
         moveDirection.Normalize();
@@ -40,13 +43,13 @@ public class PlayerMovement : CharacterMovement
         if (moveDirection != Vector3.zero)
         {
             Quaternion rot = Quaternion.LookRotation(moveDirection, Vector3.up);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, rotateSpeed);
+            player.Tf.rotation = Quaternion.RotateTowards(player.Tf.rotation, rot, rotateSpeed);
 
-            Moving = true;
+            //Moving = true;
         }
         else
         {
-            Moving = false;
+            //Moving = false;
         }
     }
 
@@ -54,14 +57,13 @@ public class PlayerMovement : CharacterMovement
     {
         base.StopMoving();
 
-        player.CanMove = false;
-        Moving = false;
+        //player.CanMove = false;
+        //Moving = false;
 
         moveDirection = Vector3.zero;
         player.rb.velocity = Vector3.zero;
 
         verticalMovement = horizontalMovement = 0;
-        
     }
 
 }

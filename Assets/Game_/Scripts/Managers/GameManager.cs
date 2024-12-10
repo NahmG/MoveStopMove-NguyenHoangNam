@@ -12,7 +12,11 @@ public class GameManager : Singleton<GameManager>
     public void ChangeState(GameState newState)
     {
         _state = newState;
+
+        _OnStateChanged?.Invoke(newState);
     }
+
+    public Action<GameState> _OnStateChanged;
 
     private void Awake()
     {

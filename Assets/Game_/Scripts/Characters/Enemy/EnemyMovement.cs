@@ -4,41 +4,28 @@ using UnityEngine.AI;
 public class EnemyMovement : CharacterMovement
 {
     [SerializeField] Enemy enemy;
-    Vector3 des;
-
-
-    private void Update()
-    {
-        if(enemy.IsDead) return;
-
-        if (enemy.agent.velocity.magnitude < .3f)
-        {
-            Moving = false;
-        }
-        else
-        {
-            Moving = true;
-        }
-    }
 
     public override void StopMoving()
     {
-        Moving = false;
-
         enemy.agent.isStopped = true;
         enemy.agent.ResetPath();
-
     }
 
     public override void Move()
     {
         if (enemy.agent.remainingDistance <= enemy.agent.stoppingDistance)
         {
-            if (RandomPoint(transform.position, 10f, out Vector3 point))
+            if (RandomPoint(enemy.Tf.position, 10f, out Vector3 point))
             {
                 enemy.agent.SetDestination(point);
             }
         }
+    }
+
+    public bool IsReachDestination()
+    {
+        float dis = enemy.agent.remainingDistance;
+        return dis > 0 && dis < 0.1f;
     }
 
     bool RandomPoint(Vector3 center, float range, out Vector3 result)

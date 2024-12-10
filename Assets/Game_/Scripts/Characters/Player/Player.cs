@@ -7,12 +7,11 @@ public class Player : Character
 {
     [Header("Player settings")]
     public Rigidbody rb;
+    public PlayerMovement movement;
 
     [HideInInspector] public bool CanMove;
 
     [SerializeField] CapsuleCollider _collider;
-
-    private float nextAttack = 0f;
 
     [SerializeField] CombatText combatTextPrefab;
 
@@ -26,44 +25,48 @@ public class Player : Character
 
     [SerializeField] Color playerColor;
 
+    public StateMachine<Player> StateMachine;
+
+    public PAttackState AttackState;
+    public PIdleState IdleState;
+    public PMoveState MoveState;
+
+    private void Awake()
+    {
+        StateMachine = new();
+
+        AttackState = new(StateMachine, this);
+        IdleState = new(StateMachine, this);
+        MoveState = new(StateMachine, this);
+    }
+
     public override void Update()
     {
         if (IsDead) return;
 
         base.Update();
 
-        movement.Move();
+        movement.GetInput();
 
-        if (movement.Moving)
-        {
-            animControl.ChangeAnim("Run");
-            nextAttack = Time.time;
-            return;
-        }
+        StateMachine.currentState?.Excecute();
+    }
 
-        else if (attacker.Target != null && attacker.TargetInRange())
-        {
-            if (Time.time >= nextAttack)
-            {
-                Attack();
-                nextAttack = Time.time + attackRate;
-            }
-        }
+    public override void OnGameStageChanged(GameState state)
+    {
+        base.OnGameStageChanged(state);
 
-        //else if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
-        else
+        switch (state)
         {
-            animControl.ChangeAnim("Idle");
-        }
-
-        if (GameManager.IsState(GameState.Shop))
-        {
-            animControl.ChangeAnim("Dance");
-        }
-
-        if (GameManager.IsState(GameState.Victory))
-        {
-            animControl.ChangeAnim("Win");
+            case GameState.MainMenu:
+                movement.StopMoving();
+                animControl.ChangeAnim("Idle");
+                break;
+            case GameState.Shop:
+                animControl.ChangeAnim("Dance");
+                break;
+            case GameState.Victory:
+                animControl.ChangeAnim("Win");
+                break;
         }
     }
 
@@ -90,17 +93,19 @@ public class Player : Character
         rangeIndicator.SetActive(true);
 
         CanMove = true;
+
+        StateMachine.Init(IdleState);
     }
 
     public override void OnDespawn()
     {
         base.OnDespawn();
 
-        UIManager.Ins.CloseAll();
-        StageManager.Ins.Fail();
+        Destroy(gameObject);
     }
 
-    public void Revive(Vector3 pos)
+
+    public void OnRevive(Vector3 pos)
     {
         transform.position = pos;
 
@@ -114,11 +119,11 @@ public class Player : Character
         IsDead = false;
     }
 
-    public override void Die()
+    public override void OnDeath()
     {
         movement.StopMoving();
 
-        base.Die();
+        base.OnDeath();
 
         _collider.enabled = false;
         animControl.ChangeAnim("Dead");
@@ -127,10 +132,10 @@ public class Player : Character
         color *= .5f;
         skin.bodyRenderer.material.color = color;
 
-        Invoke(nameof(OnDespawn), 2f);
+        Invoke(nameof(OnFail), 2f);
     }
 
-    public void Victory()
+    public override void OnVictory()
     {
         if (IsDead) { return; }
         movement.StopMoving();
@@ -141,6 +146,13 @@ public class Player : Character
 
         UIManager.Ins.CloseAll();
         StageManager.Ins.Victory();
+    }
+
+    public override void OnFail()
+    {
+        base.OnFail();
+
+        StageManager.Ins.Fail();
     }
 
     private void Attack()
@@ -161,11 +173,15 @@ public class Player : Character
     {
         base.OnLevelUp(scale);
         CameraFollow.Ins.ChangeOffsetIngame(scale);
+        CombatText(attacker.Target);
     }
 
     public void CombatText(Character target)
     {
-        Instantiate(combatTextPrefab, transform).OnInit(target.Bonus);
+        if (target != null)
+        {
+            Instantiate(combatTextPrefab, transform).OnInit(target.Bonus);
+        }
     }
 
     public void AddJoyStick()

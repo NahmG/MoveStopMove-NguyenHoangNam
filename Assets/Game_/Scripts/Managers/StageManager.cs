@@ -17,7 +17,7 @@ public class StageManager : Singleton<StageManager>
         UIManager.Ins.OpenUI<CanvasIntro>();
         UIManager.Ins.CloseUI<CanvasIntro>(2f);
 
-        OnInit();
+        Invoke(nameof(OnInit), 1.8f);
     }
 
     public void OnInit()
@@ -101,6 +101,7 @@ public class StageManager : Singleton<StageManager>
 
     public void Fail()
     {
+        UIManager.Ins.CloseAll();
         if (!CharacterManager.Ins.isRevive)
         {
             UIManager.Ins.OpenUI<CanvasRevive>();

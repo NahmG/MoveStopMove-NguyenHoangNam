@@ -24,8 +24,6 @@ public class PoolControl : MonoBehaviour
         {
             MiniPool.Preload(PoolWithRoot[i].prefab, PoolWithRoot[i].amount, PoolWithRoot[i].root);
         }
-
-        characterManager.SetPool();
     }
 }
 

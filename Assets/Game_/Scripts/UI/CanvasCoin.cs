@@ -9,17 +9,16 @@ public class CanvasCoin : UICanvas
     [SerializeField] TMP_Text coinText;
     [SerializeField] GameObject coin;
 
-
     public override void Open()
     {
         base.Open();
-        coin.transform.DOLocalMoveX(425, 0f); 
+        coin.transform.DOMoveX(975, 0f); 
 
     }
 
     public void OnClose()
     {
-        coin.transform.DOLocalMoveX(transform.position.x + 500, .25f);
+        coin.transform.DOMoveX(coin.transform.position.x + 500, .25f);
     }
 
     void Update()

@@ -5,24 +5,24 @@ using UnityEngine;
 public class FireProjectile : MonoBehaviour
 {
     [SerializeField] Transform shootPoint;
-    [SerializeField] Character c;
+    [SerializeField] Character owner;
  
     public void Fire()
     {
-        CharacterAttack attacker = c.attacker;
+        CharacterAttack attacker = owner.attacker;
 
-        Bullet bullet = MiniPool.Spawn<Bullet>((PoolType)c.currentWeapon.data.type, shootPoint.position, Quaternion.identity);
+        Bullet bullet = MiniPool.Spawn<Bullet>((PoolType)owner.currentWeapon.data.type, shootPoint.position, Quaternion.identity);
 
         if (bullet != null)
         {
-            bullet.Init(c.AttackRange, attacker.direc, c);
+            bullet.Init(owner.AttackRange, attacker.direc, owner);
         }
         else { Debug.LogError("null weapon"); }
     }
 
-    public void EndBooster()
+    public void ResetAttack()
     {
-        c.ResetBooster();
+        owner.animControl.ResetAnim();
     }
 
 }

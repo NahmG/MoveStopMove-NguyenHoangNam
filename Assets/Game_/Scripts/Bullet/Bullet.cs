@@ -17,6 +17,13 @@ public class Bullet : GameUnit
     Character shooter;
     public Character Shooter => shooter;
 
+    public Transform Tf;
+
+    private void Awake()
+    {
+        Tf = transform;
+    }
+
     private void OnEnable()
     {
         shooter = null;
@@ -33,53 +40,43 @@ public class Bullet : GameUnit
     {
         if (col.gameObject.CompareTag("Character"))
         {
-            Character target = col.gameObject.GetComponent<Character>();
-            if (shooter != null && target != shooter)
-            {
-                shooter.LevelUp(target);
-
-                Player player = shooter.GetComponent<Player>();
-                if (player != null)
-                {
-                    player.CombatText(target);
-                }
-
-                target.Die();
-
-                if (!shooter.IsBoosted)
-                {
-                    OnDespawn();
-                }
-
-                GameObject go = Instantiate(hit_vfx, transform.position, Quaternion.identity);
-                Destroy(go, .5f);
-            }
+            Character target = Cache.GenCharacter(col);
+            OnTargetHit(target);
         }
+    }
+
+    public void Init(float range, Vector3 direction, Character shooter)
+    {
+        this.range = range;
+        this.direction = direction;
+        this.shooter = shooter;
+
+        Tf.localScale = shooter.Tf.localScale;
+
+        startPos = Tf.position;
     }
 
     public virtual void Shoot()
     {
         if (shooter.IsBoosted)
         {
-            transform.localScale = Vector3.Lerp(transform.localScale, transform.localScale * 2, 1f * Time.deltaTime);
+            Tf.localScale = Vector3.Lerp(Tf.localScale, Tf.localScale * 2, 1f * Time.deltaTime);
             moveSpeed = Mathf.Lerp(speed, 15f, 5f * Time.deltaTime);
-            if (Vector3.Distance(transform.position, startPos) > range * 1.5f)
+            if (Vector3.Distance(Tf.position, startPos) > range * 1.5f)
             {
                 OnDespawn();
             }
         }
         else
         {
-            if (Vector3.Distance(transform.position, startPos) > range)
+            if (Vector3.Distance(Tf.position, startPos) > range)
             {
                 OnDespawn();
             }
             moveSpeed = speed;
         }
 
-        transform.Translate(moveSpeed * Time.deltaTime * direction);
-
-        
+        Tf.Translate(moveSpeed * Time.deltaTime * direction);
 
         if (direction != Vector3.zero)
         {
@@ -99,19 +96,23 @@ public class Bullet : GameUnit
                 model.Rotate(0, 0, rotate);
             }
         }
-        
-
     }
 
-    public void Init(float range, Vector3 direction, Character shooter)
+    public void OnTargetHit(Character target)
     {
-        this.range = range;
-        this.direction = direction;
-        this.shooter = shooter;
+        if (shooter != null && target != shooter)
+        {
+            shooter.LevelUp(target);
+            target.OnHit();
 
-        transform.localScale = shooter.transform.localScale;
+            if (!shooter.IsBoosted)
+            {
+                OnDespawn();
+            }
 
-        startPos = transform.position;
+            GameObject go = Instantiate(hit_vfx, Tf.position, Quaternion.identity);
+            Destroy(go, .5f);
+        }
     }
 
     public void OnDespawn()

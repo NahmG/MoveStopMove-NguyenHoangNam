@@ -7,15 +7,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] GameObject model;
     public WeaponData data;
 
-    public void OnInit()
-    {
+    public void OnInit() { }
+    public void OnDespawn() { }
 
-    }
-
-    public void OnDespawn()
-    {
-
-    }
 }
 
 
